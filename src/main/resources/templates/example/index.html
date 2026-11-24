@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css">
+  <title th:text="${page.title}">CMS Example</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.6; margin: 3rem auto; max-width: 52rem; padding: 0 1rem; }
+    .block { border: 2px solid transparent; border-radius: .5rem; margin-top: 2rem; padding: 1rem; position: relative; transition: border-color .15s, background .15s; }
+    .block:hover { background: #fafafa; border-color: #9aa8ff; }
+    .block-toolbar { align-items: center; background: white; border: 1px solid #9aa8ff; border-radius: .4rem; box-shadow: 0 3px 12px #0002; display: flex; gap: .25rem; opacity: 0; padding: .35rem; position: absolute; right: .75rem; top: .75rem; transform: translateY(-.25rem); transition: opacity .15s, transform .15s; }
+    .block:hover .block-toolbar, .block-toolbar:focus-within { opacity: 1; transform: translateY(0); }
+    .block-toolbar a, .block-toolbar button { align-items: center; background: #4656c8; border: 0; border-radius: .25rem; color: white; cursor: pointer; display: inline-flex; font-size: 1rem; height: 1.9rem; justify-content: center; padding: 0; text-decoration: none; width: 1.9rem; }
+    .block-toolbar .draft-label { color: #8a5b00; font-size: .75rem; font-weight: 600; padding: 0 .25rem; }
+    .block-toolbar .danger { background: #a52b2b; }
+    .block-toolbar .publish { background: #287b42; }
+    .preview-banner { align-items: center; background: #fff5d6; border: 1px solid #e0bf59; display: flex; justify-content: space-between; margin-bottom: 1rem; padding: .5rem .75rem; }
+    .sr-only { height: 1px; margin: -1px; overflow: hidden; position: absolute; width: 1px; clip: rect(0, 0, 0, 0); }
+    .message { background: #eef7ee; border: 1px solid #a7d3a7; padding: .75rem 1rem; }
+    .metadata { color: #666; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <p class="message" th:if="${message}" th:text="${message}">Message</p>
+  <header>
+    <h1 th:text="${page.title}">CMS Example</h1>
+    <p class="preview-banner" th:if="${draftPreview == true}">
+      <span>Draft preview — these changes are not published.</span>
+    </p>
+    <p th:text="${page.summary}">Example summary</p>
+    <p class="metadata">
+      Status: <span th:text="${page.status}">PUBLISHED</span>
+      · Version: <span th:text="${page.version}">1</span>
+    </p>
+  </header>
+
+  <main>
+    <section class="block" th:each="block : ${page.blocks}" th:if="${block.visible}">
+      <div class="block-toolbar">
+        <a th:if="${draftPreview == true}" href="/" title="Cancel preview" aria-label="Cancel preview"><i class="bi bi-arrow-return-left" aria-hidden="true"></i></a>
+        <a th:href="@{/edit(blockId=${block.id})}" title="Edit" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+        <span class="draft-label" th:if="${block.draftAvailable or (draftPreview == true and block.draft)}">Unpublished draft</span>
+        <a th:if="${block.draftAvailable and draftPreview != true}" th:href="@{/preview(blockId=${block.id})}"
+           title="View draft" aria-label="View draft"><i class="bi bi-eye" aria-hidden="true"></i></a>
+        <form th:if="${block.draftAvailable or (draftPreview == true and block.draft)}" method="post" action="/publish"
+              onsubmit="return confirm('Publish this draft now?');">
+          <button class="publish" type="submit" title="Publish" aria-label="Publish"><i class="bi bi-check-lg" aria-hidden="true"></i></button>
+        </form>
+        <form th:if="${block.draftAvailable or (draftPreview == true and block.draft)}" method="post" action="/draft/delete"
+              onsubmit="return confirm('Delete this unpublished draft?');">
+          <input type="hidden" name="draftId" th:value="${draftPreview == true ? block.id : block.draftId}">
+          <button class="danger" type="submit" title="Delete draft" aria-label="Delete draft"><i class="bi bi-trash" aria-hidden="true"></i></button>
+        </form>
+      </div>
+      <h2 th:if="${block.heading != null}" th:text="${block.heading}">Block heading</h2>
+      <div th:utext="${block.html}">
+        Rendered content
+      </div>
+    </section>
+  </main>
+</body>
+</html>

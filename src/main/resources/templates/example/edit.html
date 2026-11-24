@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit content · <span th:text="${page.title}">CMS Example</span></title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.6; margin: 3rem auto; max-width: 60rem; padding: 0 1rem; }
+    textarea { box-sizing: border-box; font: 1rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; min-height: 22rem; padding: 1rem; width: 100%; }
+    .actions { display: flex; gap: .75rem; margin-top: 1rem; }
+    button, a { border: 0; border-radius: .3rem; cursor: pointer; display: inline-block; padding: .65rem 1rem; text-decoration: none; }
+    button[type=submit] { background: #4656c8; color: white; }
+    .publish { background: #287b42; color: white; }
+    .cancel { background: #eee; color: #222; }
+  </style>
+</head>
+<body>
+  <h1>Edit Markdown</h1>
+  <p th:text="${page.title}">CMS Example</p>
+
+  <form method="post" action="/edit">
+    <input type="hidden" name="blockId" th:value="${block.id}">
+    <textarea name="body" th:text="${block.body}" aria-label="Markdown content"></textarea>
+    <div class="actions">
+      <button type="submit">Save draft</button>
+      <a class="publish" href="/">Cancel</a>
+    </div>
+  </form>
+
+  <form method="post" action="/publish" class="actions">
+    <button type="submit" class="publish">Publish draft</button>
+    <a class="cancel" href="/">Back</a>
+  </form>
+</body>
+</html>

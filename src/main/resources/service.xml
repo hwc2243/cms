@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service name="cms" package="com.github.hwc2243.cms">
+  <entity name="contentPage">
+    <attribute name="slug" type="string" />
+    <attribute name="title" type="string" />
+    <attribute name="summary" type="string" />
+    <attribute name="status" type="enum" enum-values="DRAFT,PUBLISHED,ARCHIVED" />
+    <attribute name="version" type="int" />
+    <attribute name="publishedAt" type="datetime" />
+    <attribute name="createdAt" type="datetime" />
+    <attribute name="updatedAt" type="datetime" />
+    <attribute name="createdBy" type="string" />
+    <attribute name="updatedBy" type="string" />
+
+    <finder unique="true">
+      <finder-attribute name="slug" />
+    </finder>
+    <finder>
+      <finder-attribute name="status" />
+    </finder>
+  </entity>
+
+  <entity name="contentBlock">
+    <attribute name="sortOrder" type="int" />
+    <attribute name="blockType" type="enum" enum-values="MARKDOWN,RICH_TEXT,HERO,IMAGE_BANNER,DOCUMENT_LIST,CALLOUT" />
+    <attribute name="heading" type="string" />
+    <attribute name="body" type="string" />
+    <attribute name="primaryDocumentId" type="long" />
+    <attribute name="secondaryDocumentIds" type="string" />
+    <attribute name="metadataJson" type="string" />
+    <attribute name="visible" type="boolean" />
+    <attribute name="contentState" type="enum" enum-values="DRAFT,PUBLISHED" />
+
+    <related name="page"
+             entity="contentPage"
+             relationship="many_to_one" />
+
+    <finder>
+      <finder-attribute name="page" />
+      <finder-attribute name="contentState" />
+      <finder-attribute name="sortOrder" />
+    </finder>
+  </entity>
+</service>
